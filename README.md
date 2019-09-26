@@ -17,6 +17,16 @@ The PHP implementation of Tarjan's algorithm below has been composed and tuned a
 
 ## Installation
 
+(While not on packagist.org, add the following repository to your `composer.json`:)
+
+```json
+{
+    "repositories": [
+        {"type": "github", "url": "https://github.com/k127/php-tarjan.git"}
+    ]
+}
+```
+…then execute…
 ```bash
 composer require k127/tarjan
 ```
