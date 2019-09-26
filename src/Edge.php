@@ -3,6 +3,10 @@
 
 namespace Vacilando\Tarjan;
 
+/**
+ * Class Edge
+ * @package Vacilando\Tarjan
+ */
 class Edge
 {
     /**

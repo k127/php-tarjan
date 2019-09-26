@@ -5,6 +5,10 @@ namespace Vacilando\Tarjan;
 
 use ArrayObject;
 
+/**
+ * Class Graph
+ * @package Vacilando\Tarjan
+ */
 class Graph extends ArrayObject
 {
     /**
@@ -39,6 +43,9 @@ class Graph extends ArrayObject
                 continue;
             }
             foreach ($endNodeIds as $endNodeId) {
+                if (!array_key_exists($endNodeId, $this)) {
+                    $this[$endNodeId] = [];
+                }
                 $this->addEdge((new Edge())
                     ->setStartNodeId($startNodeId)
                     ->setEndNodeId($endNodeId));

@@ -19,10 +19,6 @@ class StronglyConnectedComponents
      * @var Graph
      */
     private $graph;
-    /**
-     * @var int
-     */
-    private $maxLoopLength;
 
     /**
      * StronglyConnectedComponents constructor.
@@ -32,29 +28,23 @@ class StronglyConnectedComponents
     public function __construct(Graph $graph)
     {
         $this->graph = $graph;
-        $this->maxLoopLength = 0;
-
-        // Initialize global values that are so far undefined.
-        $this->cycles = [];
-        $this->marked = [];
-        $this->markedStack = [];
-        $this->pointStack = [];
     }
 
     /**
-     * @return string|null
+     * @return array
      */
-    public function getGiantComponent(): ?string
+    public function getGiantComponent(): array
     {
         $maxNodes = 0;
-        $longestPathStr = null;
-        foreach ($this->getConnectedComponents() as $pathStr) {
-            if (($nodeCount = count($path = explode('|', $pathStr))) > $maxNodes) {
+        $longestPath = [];
+        foreach ($this->getConnectedComponents() as $path) {
+            if (($nodeCount = count($path)) > $maxNodes) {
                 $maxNodes = $nodeCount;
-                $longestPathStr = $pathStr;
+                $longestPath = $path;
             }
         }
-        return $longestPathStr;
+
+        return $longestPath;
     }
 
     /**
@@ -64,22 +54,46 @@ class StronglyConnectedComponents
      */
     public function getConnectedComponents(): array
     {
-        foreach ($this->graph as $startNodeId => $endNodeIdList) {
+        $this->reset();
+
+        $this->graph->ksort();
+
+        foreach (array_keys((array)$this->graph) as $startNodeId) {
             $this->marked[$startNodeId] = false;
         }
 
         //$i = 0;
+        // Run a depth-first search on all vertices in the graph
         foreach ($this->graph as $startNodeId => $endNodeIdList) {
             $this->tarjan($startNodeId, $startNodeId);
-            while (!empty($this->markedStack)) {
+            while (count($this->markedStack)) {
                 $this->marked[array_pop($this->markedStack)] = false;
             }
             //echo "\n" . ++$i . ' / ' . count($this->graph); // Enable if you wish to follow progression through the array rows.
         }
 
-        $this->cycles = array_keys($this->cycles);
+        // collect cycles. The tarjan algorithm outputs a cycle of three vertices as 4, 5, 6;
+        // we want 4, 5, 6, 4 (i.e. append the start to the loop)
+        /*
+        $filteredCycles = [];
+        foreach ($this->cycles as $cycle) {
+            $cycle[] = $cycle[0];
+            $filteredCycles[] = $cycle;
+        }
+
+        return $filteredCycles;
+         */
 
         return $this->cycles;
+    }
+
+    private function reset()
+    {
+        // Initialize global values that are so far undefined.
+        $this->cycles = [];
+        $this->marked = [];
+        $this->markedStack = [];
+        $this->pointStack = [];
     }
 
     /**
@@ -93,30 +107,28 @@ class StronglyConnectedComponents
     private function tarjan(int $FirstNodeId, int $currentNodeId): bool
     {
         $finished = false;
+
+        // begin collecting whether vertices have been visited. Point stacks are the current cycle.
         $this->pointStack[] = $currentNodeId;
         $this->marked[$currentNodeId] = true;
         $this->markedStack[] = $currentNodeId;
 
-        foreach ($this->graph[$currentNodeId] as $currentEndNodeId) {
-            if ($currentEndNodeId < $FirstNodeId) {
-                $this->graph[$currentEndNodeId] = [];
-            } elseif ($currentEndNodeId == $FirstNodeId) {
-                if (!$this->maxLoopLength || count($this->pointStack) <= $this->maxLoopLength) { // collect cycles of a given length only.
-                    // Add new cycles as array keys to avoid duplication. Way faster than using array_search.
-                    $this->cycles[implode('|', $this->pointStack)] = true;
-                }
+        // for each vertex-index reachable by this vertex
+        foreach ($this->graph[$currentNodeId] as $child) {
+            if ($child < $FirstNodeId) {
+                $this->graph[$child] = [];
+            } elseif ($child == $FirstNodeId) {
+                // Add new cycles as array keys to avoid duplication. Way faster than using array_search.
+                $this->cycles[] = $this->pointStack;
                 $finished = true;
-            } elseif ($this->marked[$currentEndNodeId] === false) {
-                if (!$this->maxLoopLength || count($this->pointStack) < $this->maxLoopLength) { // only collect cycles up to $maxLoopLength.
-                    $recurseFinished = $this->tarjan($FirstNodeId, $currentEndNodeId);
-                }
-                if (!empty($finished) || !empty($recurseFinished)) {
+            } elseif ($this->marked[$child] == false) { // continue exploring down the graph, forward, to find visited nodes
+                if ($this->tarjan($FirstNodeId, $child)) {
                     $finished = true;
                 }
             }
         }
 
-        if ($finished === true) {
+        if ($finished) {
             while (end($this->markedStack) != $currentNodeId) {
                 $this->marked[array_pop($this->markedStack)] = false;
             }

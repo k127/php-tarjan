@@ -35,6 +35,10 @@ class GraphTest extends TestCase
             8 => [0],
             9 => [0],
             10 => [10],
+        ],
+        2 => [
+            0 => [1, 2, 3],
+            1 => [5, 6, 7],
         ]
     ];
 
@@ -71,5 +75,20 @@ class GraphTest extends TestCase
         self::assertEquals([0], $graph[8]);
         self::assertEquals([0], $graph[9]);
         self::assertEquals([10], $graph[10]);
+    }
+
+    public function testFromArrayMissingTargetNodes()
+    {
+        $graph = (new Graph())->fromArray(self::ARRAY_GRAPHS[2]);
+
+        self::assertCount(7, $graph, print_r($graph, true));
+
+        self::assertEquals([1, 2, 3], $graph[0]);
+        self::assertEquals([5, 6, 7], $graph[1]);
+        self::assertEquals([], $graph[2]);
+        self::assertEquals([], $graph[3]);
+        self::assertEquals([], $graph[5]);
+        self::assertEquals([], $graph[6]);
+        self::assertEquals([], $graph[7]);
     }
 }
