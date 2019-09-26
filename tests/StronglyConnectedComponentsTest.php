@@ -75,21 +75,6 @@ class StronglyConnectedComponentsTest extends TestCase
     {
         $cycles = (new StronglyConnectedComponents($this->graphs[1]))->getConnectedComponents();
 
-        /*
-         * There are 11 results for the above example (strictly speaking: 10 cycles and 1 loop):
-         * 2|4
-         * 2|4|3|6|5
-         * 2|4|3|7|5
-         * 2|6|5
-         * 2|6|5|3|4
-         * 2|7|5
-         * 2|7|5|3|4
-         * 3|4
-         * 3|6|5
-         * 3|7|5
-         * 10
-         */
-
         self::assertIsArray($cycles);
 
         self::assertCount(3, $cycles, print_r($cycles, true));
@@ -99,24 +84,22 @@ class StronglyConnectedComponentsTest extends TestCase
         self::assertEquals('10', $cycles[2]);
     }
 
+    public function testCycleThroughEntriesWithIndexGapsLimited()
+    {
+        $cycles = (new StronglyConnectedComponents($this->graphs[1]))
+            ->setMaxLoopLength(3)
+            ->getConnectedComponents();
+
+        self::assertIsArray($cycles);
+
+        self::assertCount(1, $cycles, print_r($cycles, true));
+
+        self::assertEquals('10', $cycles[0]);
+    }
+
     public function testCycleThroughEntries()
     {
         $cycles = (new StronglyConnectedComponents($this->graphs[0]))->getConnectedComponents();
-
-        /*
-         * There are 11 results for the above example (strictly speaking: 10 cycles and 1 loop):
-         * 2|4
-         * 2|4|3|6|5
-         * 2|4|3|7|5
-         * 2|6|5
-         * 2|6|5|3|4
-         * 2|7|5
-         * 2|7|5|3|4
-         * 3|4
-         * 3|6|5
-         * 3|7|5
-         * 10
-         */
 
         self::assertIsArray($cycles);
 
@@ -137,10 +120,9 @@ class StronglyConnectedComponentsTest extends TestCase
 
     public function testCycleThroughEntriesLimited()
     {
-        $s = (new StronglyConnectedComponents($this->graphs[0]))
-            ->setMaxLoopLength(4);
-
-        $cycles = $s->getConnectedComponents();
+        $cycles = (new StronglyConnectedComponents($this->graphs[0]))
+            ->setMaxLoopLength(4)
+            ->getConnectedComponents();
 
         self::assertIsArray($cycles);
 

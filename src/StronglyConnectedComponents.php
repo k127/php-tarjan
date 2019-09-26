@@ -3,6 +3,10 @@
 
 namespace Vacilando\Tarjan;
 
+/**
+ * Class StronglyConnectedComponents
+ * @package Vacilando\Tarjan
+ */
 class StronglyConnectedComponents
 {
     private
@@ -64,12 +68,13 @@ class StronglyConnectedComponents
             $this->marked[$startNodeId] = false;
         }
 
+        //$i = 0;
         foreach ($this->graph as $startNodeId => $endNodeIdList) {
             $this->tarjan($startNodeId, $startNodeId);
             while (!empty($this->markedStack)) {
                 $this->marked[array_pop($this->markedStack)] = false;
             }
-            //echo '<br>'.($i+1).' / '.count($G_local); // Enable if you wish to follow progression through the array rows.
+            //echo "\n" . ++$i . ' / ' . count($this->graph); // Enable if you wish to follow progression through the array rows.
         }
 
         $this->cycles = array_keys($this->cycles);
