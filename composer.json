@@ -1,6 +1,6 @@
 {
     "name": "k127/tarjan",
-    "description": "Tarjan's strongly connected components algorithm",
+    "description": "Tarjan's strongly connected components (giant component) algorithm",
     "type": "library",
     "license": "GPL-2.0",
     "authors": [
