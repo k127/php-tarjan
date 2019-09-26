@@ -39,12 +39,12 @@ class StronglyConnectedComponents
      */
     public function cycleThroughEntries(int $maxLoopLength = 0): array
     {
-        for ($x = 0; $x < count($this->graph); $x++) {
-            $this->marked[$x] = false;
+        foreach ($this->graph as $startNodeId => $endNodeIdList) {
+            $this->marked[$startNodeId] = false;
         }
 
-        for ($i = 0; $i < count($this->graph); $i++) {
-            $this->tarjan($i, $i, $maxLoopLength);
+        foreach ($this->graph as $startNodeId => $endNodeIdList) {
+            $this->tarjan($startNodeId, $startNodeId, $maxLoopLength);
             while (!empty($this->markedStack)) {
                 $this->marked[array_pop($this->markedStack)] = false;
             }
