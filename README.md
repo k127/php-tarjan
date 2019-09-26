@@ -14,3 +14,31 @@ The PHP implementation of Tarjan's algorithm below has been composed and tuned a
 ## More information and live demo
 
 [http://www.vacilando.org/article/php-implementation-tarjans-cycle-detection-algorithm](http://www.vacilando.org/article/php-implementation-tarjans-cycle-detection-algorithm)
+
+## Installation
+
+```bash
+composer require k127/tarjan
+```
+
+## Usage
+
+```php
+use Vacilando\Tarjan\Edge;
+use Vacilando\Tarjan\Graph;
+use Vacilando\Tarjan\StronglyConnectedComponents;
+
+$graph = ( new Graph() )
+    ->addEdge(( new Edge() )->setStartNodeId(0)->setEndNodeId(2))
+    ->addEdge(( new Edge() )->setStartNodeId(2)->setEndNodeId(6))
+    ->addEdge(( new Edge() )->setStartNodeId(2)->setEndNodeId(7))
+    ->addEdge(( new Edge() )->setStartNodeId(3)->setEndNodeId(6))
+    ->addEdge(( new Edge() )->setStartNodeId(3)->setEndNodeId(7))
+    ->addEdge(( new Edge() )->setStartNodeId(6)->setEndNodeId(8))
+    ->addEdge(( new Edge() )->setStartNodeId(7)->setEndNodeId(8))
+    ->addEdge(( new Edge() )->setStartNodeId(8)->setEndNodeId(0))
+    ->addEdge(( new Edge() )->setStartNodeId(9)->setEndNodeId(0))
+    ->addEdge(( new Edge() )->setStartNodeId(10)->setEndNodeId(10));
+
+print_r($cycles = ( new StronglyConnectedComponents($graph) )->getConnectedComponents());
+```
