@@ -4,7 +4,6 @@
 namespace Vacilando\Tarjan\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Vacilando\Tarjan\Edge;
 use Vacilando\Tarjan\Graph;
 use Vacilando\Tarjan\StronglyConnectedComponents;
 
@@ -21,47 +20,8 @@ class StronglyConnectedComponentsTest extends TestCase
 
     public function setUp(): void
     {
-        // Array $G is to contain the graph in node-adjacency format.
-        $arrayGraphs = [
-            0 => [
-                0 => [1],
-                1 => [4, 6, 7],
-                2 => [4, 6, 7],
-                3 => [4, 6, 7],
-                4 => [2, 3],
-                5 => [2, 3],
-                6 => [5, 8],
-                7 => [5, 8],
-                8 => [],
-                9 => [],
-                10 => [10], // This is a self-cycle (aka "loop").
-            ],
-            1 => [
-                0 => [2],
-                2 => [6, 7],
-                3 => [6, 7],
-                6 => [8],
-                7 => [8],
-                8 => [0],
-                9 => [0],
-                10 => [10],
-            ]
-        ];
-
-        foreach ($arrayGraphs as $arrayGraph) {
-            $graph = new Graph();
-            foreach ($arrayGraph as $startNodeId => $endNodeIds) {
-                if (!count($endNodeIds)) {
-                    $graph[$startNodeId] = [];
-                    continue;
-                }
-                foreach ($endNodeIds as $endNodeId) {
-                    $graph->addEdge((new Edge())
-                        ->setStartNodeId($startNodeId)
-                        ->setEndNodeId($endNodeId));
-                }
-            }
-            $this->graphs[] = $graph;
+        foreach (GraphTest::ARRAY_GRAPHS as $arrayGraph) {
+            $this->graphs[] = (new Graph())->fromArray($arrayGraph);
         }
     }
 

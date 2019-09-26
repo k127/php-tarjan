@@ -27,10 +27,32 @@ class Graph extends ArrayObject
     }
 
     /**
+     * @param $arrayGraph
+     *
+     * @return Graph
+     */
+    public function fromArray($arrayGraph): self
+    {
+        foreach ($arrayGraph as $startNodeId => $endNodeIds) {
+            if (!count($endNodeIds)) {
+                $this[$startNodeId] = [];
+                continue;
+            }
+            foreach ($endNodeIds as $endNodeId) {
+                $this->addEdge((new Edge())
+                    ->setStartNodeId($startNodeId)
+                    ->setEndNodeId($endNodeId));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * @param Edge $edge
      * @return Graph
      */
-    public function addEdge(Edge $edge): Graph
+    public function addEdge(Edge $edge): self
     {
         if (array_key_exists($startNodeId = $edge->getStartNodeId(), $this)) {
             array_push($this[$startNodeId], $edge->getEndNodeId());
