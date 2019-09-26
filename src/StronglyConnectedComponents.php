@@ -38,6 +38,22 @@ class StronglyConnectedComponents
     }
 
     /**
+     * @return string|null
+     */
+    public function getGiantComponent(): ?string
+    {
+        $maxNodes = 0;
+        $longestPathStr = null;
+        foreach ($this->getConnectedComponents() as $pathStr) {
+            if (($nodeCount = count($path = explode('|', $pathStr))) > $maxNodes) {
+                $maxNodes = $nodeCount;
+                $longestPathStr = $pathStr;
+            }
+        }
+        return $longestPathStr;
+    }
+
+    /**
      * Iterates through the graph array rows, executing php_tarjan().
      *
      * @return array

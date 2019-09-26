@@ -154,4 +154,13 @@ class StronglyConnectedComponentsTest extends TestCase
         self::assertEquals('3|7|5', $cycles[5]);
         self::assertEquals('10', $cycles[6]);
     }
+
+    public function testGetGiantComponent()
+    {
+        $giantComponent = (new StronglyConnectedComponents($this->graphs[0]))->getGiantComponent();
+
+        self::assertIsString($giantComponent);
+
+        self::assertEquals('2|4|3|6|5', $giantComponent);
+    }
 }
