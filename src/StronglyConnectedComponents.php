@@ -15,6 +15,10 @@ class StronglyConnectedComponents
      * @var Graph
      */
     private $graph;
+    /**
+     * @var int
+     */
+    private $maxLoopLength;
 
     /**
      * StronglyConnectedComponents constructor.
@@ -24,6 +28,7 @@ class StronglyConnectedComponents
     public function __construct(Graph $graph)
     {
         $this->graph = $graph;
+        $this->maxLoopLength = 0;
 
         // Initialize global values that are so far undefined.
         $this->cycles = [];
@@ -37,14 +42,14 @@ class StronglyConnectedComponents
      *
      * @return array
      */
-    public function cycleThroughEntries(int $maxLoopLength = 0): array
+    public function getConnectedComponents(): array
     {
         foreach ($this->graph as $startNodeId => $endNodeIdList) {
             $this->marked[$startNodeId] = false;
         }
 
         foreach ($this->graph as $startNodeId => $endNodeIdList) {
-            $this->tarjan($startNodeId, $startNodeId, $maxLoopLength);
+            $this->tarjan($startNodeId, $startNodeId);
             while (!empty($this->markedStack)) {
                 $this->marked[array_pop($this->markedStack)] = false;
             }
@@ -64,7 +69,7 @@ class StronglyConnectedComponents
      *
      * @return bool
      */
-    private function tarjan(int $s, int $v, int $maxLoopLength = 0): bool
+    private function tarjan(int $s, int $v): bool
     {
         $f = false;
         $this->pointStack[] = $v;
@@ -75,13 +80,13 @@ class StronglyConnectedComponents
             if ($w < $s) {
                 $this->graph[$w] = [];
             } elseif ($w == $s) {
-                if (!$maxLoopLength || count($this->pointStack) == $maxLoopLength) { // collect cycles of a given length only.
+                if (!$this->maxLoopLength || count($this->pointStack) <= $this->maxLoopLength) { // collect cycles of a given length only.
                     // Add new cycles as array keys to avoid duplication. Way faster than using array_search.
                     $this->cycles[implode('|', $this->pointStack)] = true;
                 }
                 $f = true;
             } elseif ($this->marked[$w] === false) {
-                if (!$maxLoopLength || count($this->pointStack) < $maxLoopLength) { // only collect cycles up to $maxLoopLength.
+                if (!$this->maxLoopLength || count($this->pointStack) < $this->maxLoopLength) { // only collect cycles up to $maxLoopLength.
                     $g = $this->tarjan($s, $w);
                 }
                 if (!empty($f) OR !empty($g)) {
@@ -101,5 +106,16 @@ class StronglyConnectedComponents
         array_pop($this->pointStack);
 
         return $f;
+    }
+
+    /**
+     * @param int $maxLoopLength
+     * @return StronglyConnectedComponents
+     */
+    public function setMaxLoopLength(int $maxLoopLength): StronglyConnectedComponents
+    {
+        $this->maxLoopLength = $maxLoopLength;
+
+        return $this;
     }
 }

@@ -8,6 +8,10 @@ use Vacilando\Tarjan\Edge;
 use Vacilando\Tarjan\Graph;
 use Vacilando\Tarjan\StronglyConnectedComponents;
 
+/**
+ * Class StronglyConnectedComponentsTest
+ * @package Vacilando\Tarjan\Tests
+ */
 class StronglyConnectedComponentsTest extends TestCase
 {
     /**
@@ -69,7 +73,7 @@ class StronglyConnectedComponentsTest extends TestCase
 
     public function testCycleThroughEntriesWithIndexGaps()
     {
-        $cycles = (new StronglyConnectedComponents($this->graphs[1]))->cycleThroughEntries();
+        $cycles = (new StronglyConnectedComponents($this->graphs[1]))->getConnectedComponents();
 
         /*
          * There are 11 results for the above example (strictly speaking: 10 cycles and 1 loop):
@@ -85,6 +89,8 @@ class StronglyConnectedComponentsTest extends TestCase
          * 3|7|5
          * 10
          */
+
+        self::assertIsArray($cycles);
 
         self::assertCount(3, $cycles, print_r($cycles, true));
 
@@ -95,7 +101,7 @@ class StronglyConnectedComponentsTest extends TestCase
 
     public function testCycleThroughEntries()
     {
-        $cycles = (new StronglyConnectedComponents($this->graphs[0]))->cycleThroughEntries();
+        $cycles = (new StronglyConnectedComponents($this->graphs[0]))->getConnectedComponents();
 
         /*
          * There are 11 results for the above example (strictly speaking: 10 cycles and 1 loop):
@@ -111,6 +117,8 @@ class StronglyConnectedComponentsTest extends TestCase
          * 3|7|5
          * 10
          */
+
+        self::assertIsArray($cycles);
 
         self::assertCount(11, $cycles, print_r($cycles, true));
 
@@ -129,36 +137,21 @@ class StronglyConnectedComponentsTest extends TestCase
 
     public function testCycleThroughEntriesLimited()
     {
-        $s = new StronglyConnectedComponents($this->graphs[0]);
+        $s = (new StronglyConnectedComponents($this->graphs[0]))
+            ->setMaxLoopLength(4);
 
-        $cycles = $s->cycleThroughEntries(3);
+        $cycles = $s->getConnectedComponents();
 
-        /*
-         * There are 11 results for the above example (strictly speaking: 10 cycles and 1 loop):
-         * 2|4
-         * 2|4|3|6|5
-         * 2|4|3|7|5
-         * 2|6|5
-         * 2|6|5|3|4
-         * 2|7|5
-         * 2|7|5|3|4
-         * 3|4
-         * 3|6|5
-         * 3|7|5
-         * 10
-         */
+        self::assertIsArray($cycles);
 
-        self::assertCount(10, $cycles, print_r($cycles, true));
+        self::assertCount(7, $cycles, print_r($cycles, true));
 
         self::assertEquals('2|4', $cycles[0]);
-        self::assertEquals('2|4|3|6|5', $cycles[1]);
-        self::assertEquals('2|4|3|7|5', $cycles[2]);
-        self::assertEquals('2|6|5', $cycles[3]);
-        self::assertEquals('2|6|5|3|4', $cycles[4]);
-        self::assertEquals('2|7|5', $cycles[5]);
-        self::assertEquals('2|7|5|3|4', $cycles[6]);
-        self::assertEquals('3|4', $cycles[7]);
-        self::assertEquals('3|6|5', $cycles[8]);
-        self::assertEquals('3|7|5', $cycles[9]);
+        self::assertEquals('2|6|5', $cycles[1]);
+        self::assertEquals('2|7|5', $cycles[2]);
+        self::assertEquals('3|4', $cycles[3]);
+        self::assertEquals('3|6|5', $cycles[4]);
+        self::assertEquals('3|7|5', $cycles[5]);
+        self::assertEquals('10', $cycles[6]);
     }
 }
