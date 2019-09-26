@@ -80,48 +80,48 @@ class StronglyConnectedComponents
     /**
      * Recursive function to detect strongly connected components (cycles, loops).
      *
-     * @param int $s
-     * @param int $v
+     * @param int $FirstNodeId
+     * @param int $currentNodeId
      *
      * @return bool
      */
-    private function tarjan(int $s, int $v): bool
+    private function tarjan(int $FirstNodeId, int $currentNodeId): bool
     {
-        $f = false;
-        $this->pointStack[] = $v;
-        $this->marked[$v] = true;
-        $this->markedStack[] = $v;
+        $finished = false;
+        $this->pointStack[] = $currentNodeId;
+        $this->marked[$currentNodeId] = true;
+        $this->markedStack[] = $currentNodeId;
 
-        foreach ($this->graph[$v] as $w) {
-            if ($w < $s) {
-                $this->graph[$w] = [];
-            } elseif ($w == $s) {
+        foreach ($this->graph[$currentNodeId] as $currentEndNodeId) {
+            if ($currentEndNodeId < $FirstNodeId) {
+                $this->graph[$currentEndNodeId] = [];
+            } elseif ($currentEndNodeId == $FirstNodeId) {
                 if (!$this->maxLoopLength || count($this->pointStack) <= $this->maxLoopLength) { // collect cycles of a given length only.
                     // Add new cycles as array keys to avoid duplication. Way faster than using array_search.
                     $this->cycles[implode('|', $this->pointStack)] = true;
                 }
-                $f = true;
-            } elseif ($this->marked[$w] === false) {
+                $finished = true;
+            } elseif ($this->marked[$currentEndNodeId] === false) {
                 if (!$this->maxLoopLength || count($this->pointStack) < $this->maxLoopLength) { // only collect cycles up to $maxLoopLength.
-                    $g = $this->tarjan($s, $w);
+                    $recurseFinished = $this->tarjan($FirstNodeId, $currentEndNodeId);
                 }
-                if (!empty($f) OR !empty($g)) {
-                    $f = true;
+                if (!empty($finished) || !empty($recurseFinished)) {
+                    $finished = true;
                 }
             }
         }
 
-        if ($f === true) {
-            while (end($this->markedStack) != $v) {
+        if ($finished === true) {
+            while (end($this->markedStack) != $currentNodeId) {
                 $this->marked[array_pop($this->markedStack)] = false;
             }
             array_pop($this->markedStack);
-            $this->marked[$v] = false;
+            $this->marked[$currentNodeId] = false;
         }
 
         array_pop($this->pointStack);
 
-        return $f;
+        return $finished;
     }
 
     /**
